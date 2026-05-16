@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: ai-nav-server
+    env_file:
+      - ./server/.env
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - FRONTEND_ORIGIN=http://localhost:5173
+    restart: unless-stopped
+
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: ai-nav-client
+    depends_on:
+      - server
+    ports:
+      - "5173:80"
+    restart: unless-stopped

@@ -1,0 +1,299 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --grid-size: 28px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html {
+  scrollbar-color: #2a2f3a #06070a;
+}
+
+body {
+  font-family: "Atkinson Hyperlegible", Inter, system-ui, sans-serif;
+  background-color: #06070a;
+  color: #f7f8fb;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 1.125rem;
+  line-height: 1.7;
+}
+
+/* Ambient background — soft radial glows + subtle dot grid that lives behind
+   the entire app. Pointer-events disabled so it never blocks interaction. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0, 255, 149, 0.18), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 100% 10%, rgba(124, 140, 255, 0.12), transparent 65%),
+    radial-gradient(ellipse 70% 50% at 0% 100%, rgba(0, 255, 149, 0.06), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, black 30%, transparent 80%);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* Scrollbar — subtle, thin, on-brand */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #262b36;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #384055;
+}
+
+@layer base {
+  *:focus-visible {
+    outline: 3px solid #00ff95;
+    outline-offset: 3px;
+    border-radius: 8px;
+  }
+
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection {
+    background: rgba(0, 255, 149, 0.3);
+    color: #f7f8fb;
+  }
+}
+
+@layer components {
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Glass-morphism panel — the core surface. Soft inner highlight at the top,
+     subtle border, and depth shadow. */
+  .panel {
+    @apply relative rounded-3xl p-6 md:p-7;
+    background:
+      linear-gradient(140deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%),
+      rgba(17, 20, 26, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.04) inset,
+      0 12px 40px -16px rgba(0, 0, 0, 0.7);
+  }
+
+  .panel::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+      135deg,
+      rgba(0, 255, 149, 0.22),
+      transparent 40%,
+      transparent 60%,
+      rgba(124, 140, 255, 0.14)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    padding: 1px;
+    opacity: 0.7;
+  }
+
+  .panel-accent::before {
+    background: linear-gradient(
+      135deg,
+      rgba(0, 255, 149, 0.6),
+      rgba(0, 255, 149, 0.05) 50%,
+      rgba(124, 140, 255, 0.3)
+    );
+    opacity: 1;
+  }
+
+  .panel-emergency {
+    border-color: rgba(255, 53, 53, 0.4);
+  }
+  .panel-emergency::before {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 53, 53, 0.7),
+      rgba(255, 138, 60, 0.4)
+    );
+    opacity: 1;
+  }
+
+  /* Buttons — large touch targets, depth, gradient fills */
+  .btn-base {
+    @apply relative inline-flex items-center justify-center gap-3 rounded-2xl
+      px-6 text-lg font-semibold transition-all duration-150
+      active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed
+      min-h-[80px] min-w-[80px];
+  }
+
+  .btn-primary {
+    @apply btn-base text-black;
+    background-image: linear-gradient(135deg, #00ff95 0%, #00b366 100%);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.25) inset,
+      0 0 0 1px rgba(0, 255, 149, 0.45),
+      0 12px 30px -10px rgba(0, 255, 149, 0.5);
+  }
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.3) inset,
+      0 0 0 1px rgba(0, 255, 149, 0.6),
+      0 16px 40px -10px rgba(0, 255, 149, 0.6);
+  }
+
+  .btn-secondary {
+    @apply btn-base text-text;
+    background: rgba(31, 36, 48, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    border-color: rgba(0, 255, 149, 0.5);
+    background: rgba(38, 44, 58, 0.9);
+    transform: translateY(-1px);
+  }
+  .btn-secondary[aria-pressed="true"] {
+    border-color: rgba(0, 255, 149, 0.8);
+    background: rgba(0, 255, 149, 0.12);
+    color: #00ff95;
+  }
+
+  .btn-warning {
+    @apply btn-base text-black font-bold;
+    background-image: linear-gradient(135deg, #ffb066 0%, #ff7028 100%);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.25) inset,
+      0 0 0 1px rgba(255, 138, 60, 0.45),
+      0 12px 30px -10px rgba(255, 138, 60, 0.5);
+  }
+
+  .btn-emergency {
+    @apply btn-base text-white text-2xl font-black tracking-wide;
+    background-image: linear-gradient(135deg, #ff5050 0%, #c41616 100%);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.2) inset,
+      0 0 0 1px rgba(255, 53, 53, 0.6),
+      0 14px 36px -10px rgba(255, 53, 53, 0.6);
+  }
+  .btn-emergency:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.25) inset,
+      0 0 0 1px rgba(255, 53, 53, 0.8),
+      0 18px 50px -10px rgba(255, 53, 53, 0.8);
+  }
+
+  /* Status chip — used in StatusDisplay */
+  .chip {
+    @apply inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-semibold;
+    background: rgba(31, 36, 48, 0.6);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+  .chip-active {
+    background: rgba(0, 255, 149, 0.12);
+    border-color: rgba(0, 255, 149, 0.4);
+    color: #00ff95;
+  }
+  .chip-warning {
+    background: rgba(255, 138, 60, 0.14);
+    border-color: rgba(255, 138, 60, 0.4);
+    color: #ffb066;
+  }
+  .chip-emergency {
+    background: rgba(255, 53, 53, 0.14);
+    border-color: rgba(255, 53, 53, 0.5);
+    color: #ff7575;
+  }
+
+  /* Status dot */
+  .status-dot {
+    @apply inline-block w-2.5 h-2.5 rounded-full flex-shrink-0;
+  }
+  .dot-active {
+    background: #00ff95;
+    box-shadow: 0 0 12px rgba(0, 255, 149, 0.7);
+  }
+  .dot-passive {
+    background: #00b366;
+  }
+  .dot-warning {
+    background: #ff8a3c;
+  }
+  .dot-emergency {
+    background: #ff3535;
+    box-shadow: 0 0 12px rgba(255, 53, 53, 0.7);
+  }
+  .dot-idle {
+    background: #4b5266;
+  }
+
+  /* Section heading kicker — small label above big text */
+  .kicker {
+    @apply text-xs font-bold tracking-[0.2em] uppercase text-accent;
+  }
+
+  /* Mono numeric display — for distances, accuracies, etc. */
+  .num {
+    font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Hard-cap any flashing animations to ≤3 Hz for seizure safety. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

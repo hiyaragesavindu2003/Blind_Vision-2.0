@@ -1,0 +1,64 @@
+import axios from "axios";
+import type { Response } from "express";
+
+const apiKey = process.env.ELEVENLABS_API_KEY;
+const defaultVoice =
+  process.env.ELEVENLABS_VOICE_ID ?? "21m00Tcm4TlvDq8ikWAM"; // Rachel
+const defaultModel = process.env.ELEVENLABS_MODEL_ID ?? "eleven_turbo_v2_5";
+
+const ELEVEN_BASE = "https://api.elevenlabs.io/v1";
+
+interface SpeakOptions {
+  text: string;
+  voiceId?: string;
+  modelId?: string;
+  stability?: number;
+  similarityBoost?: number;
+  language?: string;
+}
+
+/**
+ * Streams ElevenLabs TTS audio (audio/mpeg) directly into the provided Express
+ * response. We use streaming to keep the perceived latency low.
+ */
+export const streamSpeech = async (
+  res: Response,
+  opts: SpeakOptions,
+): Promise<void> => {
+  if (!apiKey) {
+    throw Object.assign(new Error("ELEVENLABS_API_KEY is not configured"), {
+      status: 503,
+    });
+  }
+  const voiceId = opts.voiceId ?? defaultVoice;
+  const modelId = opts.modelId ?? defaultModel;
+  const url = `${ELEVEN_BASE}/text-to-speech/${voiceId}/stream?optimize_streaming_latency=3`;
+
+  const response = await axios.post(
+    url,
+    {
+      text: opts.text,
+      model_id: modelId,
+      voice_settings: {
+        stability: opts.stability ?? 0.75,
+        similarity_boost: opts.similarityBoost ?? 0.8,
+        style: 0.0,
+        use_speaker_boost: true,
+      },
+    },
+    {
+      headers: {
+        "xi-api-key": apiKey,
+        "Content-Type": "application/json",
+        Accept: "audio/mpeg",
+      },
+      responseType: "stream",
+      timeout: 30_000,
+    },
+  );
+
+  res.setHeader("Content-Type", "audio/mpeg");
+  res.setHeader("Cache-Control", "no-store");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (response.data as NodeJS.ReadableStream).pipe(res);
+};
