@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Environment & secrets — never commit real keys
+.env
+.env.local
+.env.*.local
+server/.env
+client/.env.local
+# Allow committed templates
+!server/.env.example
+!client/.env.local.example
+
+# Logs & cache
+*.log
+npm-debug.log*
+.cache/
+.parcel-cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
