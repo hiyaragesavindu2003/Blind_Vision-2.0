@@ -1,3 +1,4 @@
+#Blind_Vision-2.0
 # AI-Powered Navigation Assistant
 
 > A voice-first, hands-free navigation web application designed for blind and visually impaired users.
@@ -87,7 +88,7 @@ GEMINI_API_KEY=your_gemini_key
 GEMINI_MODEL=gemini-1.5-flash
 
 ELEVENLABS_API_KEY=your_elevenlabs_key
-ELEVENLABS_VOICE_ID=21m00Tcm4TlvDq8ikWAM
+ELEVENLABS_VOICE_ID=21m00Tcm4TlvDq8ikWAM9
 ELEVENLABS_MODEL_ID=eleven_turbo_v2_5
 
 # OpenRouteService (free tier at https://openrouteservice.org/) — default
